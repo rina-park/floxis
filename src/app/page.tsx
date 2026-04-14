@@ -38,10 +38,10 @@ export default async function Home() {
       <form action={createTask} style={{ marginBottom: 16 }}>
         <input
           name="title"
-          placeholder="タスクを入力"
+          placeholder="Enter a task"
           style={{ padding: 8, width: '70%', marginRight: 8 }}
         />
-        <button type="submit">追加</button>
+        <button type="submit">Add</button>
       </form>
 
       {/* 一覧 */}
