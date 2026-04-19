@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { createTaskAction, updateTaskAction } from "@/lib/tasks/actions";
 
 import type {
-  TaskCategory,
-  TaskProject,
+  CategoryOption,
+  ProjectOption,
   TaskStatusOption,
 } from "@/types/task";
 
@@ -22,8 +22,8 @@ type TaskFormValues = {
 
 type TaskFormBaseProps = {
   statuses: TaskStatusOption[];
-  projects: TaskProject[];
-  categories: TaskCategory[];
+  projects: ProjectOption[];
+  categories: CategoryOption[];
   defaultValues: TaskFormValues;
 };
 
@@ -48,18 +48,6 @@ export function TaskForm(props: TaskFormProps) {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-
-  const availableProjects = useMemo(() => {
-    return projects.filter(
-      (project): project is NonNullable<TaskProject> => project !== null,
-    );
-  }, [projects]);
-
-  const availableCategories = useMemo(() => {
-    return categories.filter(
-      (category): category is NonNullable<TaskCategory> => category !== null,
-    );
-  }, [categories]);
 
   const isProjectSelected =
     formValues.project_id !== null && formValues.project_id !== "";
@@ -97,7 +85,6 @@ export function TaskForm(props: TaskFormProps) {
     setFormValues((currentValues) => ({
       ...currentValues,
       project_id: nextProjectId,
-      // project 配下タスクでは category は project 側で解釈するため、UIで明示的に null に戻す
       category_id: nextProjectId ? null : currentValues.category_id,
     }));
   }
@@ -270,7 +257,7 @@ export function TaskForm(props: TaskFormProps) {
               disabled={isPending}
             >
               <option value="">No Project</option>
-              {availableProjects.map((project) => (
+              {projects.map((project) => (
                 <option key={project.id} value={project.id}>
                   {project.name}
                 </option>
@@ -288,7 +275,7 @@ export function TaskForm(props: TaskFormProps) {
               disabled={isProjectSelected || isPending}
             >
               <option value="">No Category</option>
-              {availableCategories.map((category) => (
+              {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>

@@ -5,7 +5,7 @@ import {
   getTaskById,
   getTaskCreateCategories,
   getTaskCreateProjects,
-  getTaskCreateStatuses,
+  getTaskFormStatuses,
 } from "@/lib/tasks/queries";
 
 type TaskEditPageProps = {
@@ -24,7 +24,7 @@ export default async function TaskEditPage({ params }: TaskEditPageProps) {
 
   const [task, statuses, projects, categories] = await Promise.all([
     getTaskById(taskId),
-    getTaskCreateStatuses(),
+    getTaskFormStatuses(),
     getTaskCreateProjects(),
     getTaskCreateCategories(),
   ]);

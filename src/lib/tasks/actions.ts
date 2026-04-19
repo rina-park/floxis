@@ -38,23 +38,5 @@ export async function createTaskAction(
 export async function updateTaskAction(
   input: UpdateTaskActionInput,
 ): Promise<UpdateTaskActionResult> {
-  const normalizedTaskId = input.taskId.trim();
-  const normalizedTitle = input.title.trim();
-  const normalizedDueDate = input.due_date || null;
-  const normalizedProjectId = input.project_id || null;
-  const normalizedCategoryId = normalizedProjectId
-    ? null
-    : input.category_id || null;
-  const normalizedDescription = input.description?.trim() || null;
-  const normalizedStatusId = input.status_id;
-
-  return updateTask({
-    taskId: normalizedTaskId,
-    title: normalizedTitle,
-    due_date: normalizedDueDate,
-    project_id: normalizedProjectId,
-    category_id: normalizedCategoryId,
-    description: normalizedDescription,
-    status_id: normalizedStatusId,
-  });
+  return updateTask(input);
 }

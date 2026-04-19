@@ -27,3 +27,14 @@ export type TaskDetail = {
   project: TaskProject;
   category: TaskCategory;
 };
+
+export type CategoryOption = {
+  id: string;
+  name: string;
+};
+
+export type ProjectOption = {
+  id: string;
+  name: string;
+  category: CategoryOption | null;
+};

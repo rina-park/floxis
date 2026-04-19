@@ -102,7 +102,12 @@ export async function updateTask(
   input: UpdateTaskInput,
 ): Promise<UpdateTaskResult> {
   const supabase = await createServerClient();
+  const normalizedTaskId = input.taskId.trim();
   const normalizedInput = normalizeTaskInput(input);
+
+  if (!normalizedTaskId) {
+    throw new Error("Failed to update task: Task ID is required.");
+  }
 
   if (!normalizedInput.title) {
     throw new Error("Failed to update task: Title is required.");
@@ -122,7 +127,7 @@ export async function updateTask(
       description: normalizedInput.description,
       status_id: normalizedInput.status_id,
     })
-    .eq("id", input.taskId)
+    .eq("id", normalizedTaskId)
     .select("id")
     .single();
 

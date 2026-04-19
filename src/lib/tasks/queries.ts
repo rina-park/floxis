@@ -1,9 +1,9 @@
 import { createServerClient } from "@/lib/supabase/server";
 
 import type {
-  TaskCategory,
+  CategoryOption,
+  ProjectOption,
   TaskDetail,
-  TaskProject,
   TaskStatusOption,
 } from "@/types/task";
 
@@ -83,15 +83,17 @@ export async function getTasks() {
   });
 }
 
+export type TaskListRow = Awaited<ReturnType<typeof getTasks>>[number];
+
 export async function getTaskListStatuses(): Promise<TaskStatusOption[]> {
   return fetchTaskStatuses();
 }
 
-export async function getTaskCreateStatuses(): Promise<TaskStatusOption[]> {
+export async function getTaskFormStatuses(): Promise<TaskStatusOption[]> {
   return fetchTaskStatuses();
 }
 
-export async function getTaskCreateProjects(): Promise<TaskProject[]> {
+export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
   const supabase = await createServerClient();
   const { data, error } = await supabase
     .from("projects")
@@ -125,7 +127,7 @@ export async function getTaskCreateProjects(): Promise<TaskProject[]> {
   });
 }
 
-export async function getTaskCreateCategories(): Promise<TaskCategory[]> {
+export async function getTaskCreateCategories(): Promise<CategoryOption[]> {
   const supabase = await createServerClient();
   const { data, error } = await supabase
     .from("categories")
@@ -228,6 +230,7 @@ export async function getTaskDetailStatuses(): Promise<TaskStatusOption[]> {
   try {
     return await fetchTaskStatuses();
   } catch {
+    // Keep the detail page renderable even if status options fail to load.
     return [];
   }
 }

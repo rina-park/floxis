@@ -19,7 +19,6 @@ export default async function TasksPage() {
           <h2>No Tasks</h2>
           <p>No tasks have been created yet.</p>
 
-          <Link href="/tasks" hidden />
           <Link href="/tasks/new" data-action="go-to-task-create">
             Create First Task
           </Link>

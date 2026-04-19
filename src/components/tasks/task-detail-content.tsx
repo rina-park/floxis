@@ -1,40 +1,12 @@
 import Link from "next/link";
+
+import { formatDateOnly, formatDateTime } from "@/lib/format/date";
 import type { TaskDetail, TaskStatusOption } from "@/types/task";
 
 type TaskDetailContentProps = {
   task: TaskDetail;
   statuses: TaskStatusOption[];
 };
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
-function formatDateTime(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-}
 
 export function TaskDetailContent({
   task,
@@ -67,11 +39,13 @@ export function TaskDetailContent({
 
         <section data-field-group="status">
           <label htmlFor="task-status">Status</label>
+          {/* Status update is not wired yet in v0.1 */}
           <select
             id="task-status"
             name="status"
             defaultValue={task.status.id}
             data-action="update-task-status"
+            disabled
           >
             {statuses.map((status) => (
               <option key={status.id} value={status.id}>
@@ -83,9 +57,7 @@ export function TaskDetailContent({
 
         <section data-field-group="due-date" hidden={!hasDueDate}>
           <h3>Due Date</h3>
-          <p data-field="due-date">
-            {task.due_date ? formatDate(task.due_date) : null}
-          </p>
+          <p data-field="due-date">{formatDateOnly(task.due_date)}</p>
         </section>
 
         <section data-field-group="project" hidden={!hasProject}>
@@ -110,9 +82,7 @@ export function TaskDetailContent({
 
         <section data-field-group="completed-at" hidden={!hasCompletedAt}>
           <h3>Completed At</h3>
-          <p data-field="completed-at">
-            {task.completed_at ? formatDateTime(task.completed_at) : null}
-          </p>
+          <p data-field="completed-at">{formatDateTime(task.completed_at)}</p>
         </section>
 
         <section data-component="task-actions">

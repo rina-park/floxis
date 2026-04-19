@@ -1,36 +1,15 @@
 import Link from "next/link";
 
-type TaskListItem = {
-  id: string;
-  title: string;
-  status_id: string;
-  due_date: string | null;
-  created_at: string;
-  project?: {
-    name: string;
-  } | null;
-};
-
-type TaskListStatus = {
-  id: string;
-  key: string;
-  name: string;
-};
+import { formatDateOnly, formatDateTime } from "@/lib/format/date";
+import type { TaskListRow } from "@/lib/tasks/queries";
+import type { TaskStatusOption } from "@/types/task";
 
 type TaskListContentProps = {
-  tasks: TaskListItem[];
-  statuses: TaskListStatus[];
+  tasks: TaskListRow[];
+  statuses: TaskStatusOption[];
 };
 
-function formatDate(value: string | null): string {
-  if (!value) {
-    return "—";
-  }
-
-  return value.slice(0, 10);
-}
-
-function getProjectName(task: TaskListItem): string {
+function getProjectName(task: TaskListRow): string {
   if (!task.project) {
     return "—";
   }
@@ -58,10 +37,12 @@ export function TaskListContent({
 
               <label>
                 Status:
+                {/* Status update is not wired yet in v0.1 */}
                 <select
                   name="status"
                   data-action="update-task-status"
                   defaultValue={task.status_id}
+                  disabled
                 >
                   {statuses.map((status) => (
                     <option key={status.id} value={status.id}>
@@ -72,7 +53,7 @@ export function TaskListContent({
               </label>
 
               <p data-field="due-date">
-                Due Date: {formatDate(task.due_date)}
+                Due Date: {formatDateOnly(task.due_date)}
               </p>
 
               <p data-field="project">
@@ -80,7 +61,7 @@ export function TaskListContent({
               </p>
 
               <p data-field="created-at">
-                Created At: {formatDate(task.created_at)}
+                Created At: {formatDateTime(task.created_at)}
               </p>
 
               <div data-component="task-actions">

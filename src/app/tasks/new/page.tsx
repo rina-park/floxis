@@ -2,12 +2,12 @@ import { TaskForm } from "@/components/tasks/task-form";
 import {
   getTaskCreateCategories,
   getTaskCreateProjects,
-  getTaskCreateStatuses,
+  getTaskFormStatuses,
 } from "@/lib/tasks/queries";
 
 export default async function TaskCreatePage() {
   const [statuses, projects, categories] = await Promise.all([
-    getTaskCreateStatuses(),
+    getTaskFormStatuses(),
     getTaskCreateProjects(),
     getTaskCreateCategories(),
   ]);
