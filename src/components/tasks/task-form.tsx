@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
-import { createTaskAction } from "@/lib/tasks/actions";
+import { createTaskAction, updateTaskAction } from "@/lib/tasks/actions";
 
 import type {
   TaskCategory,
@@ -20,21 +20,28 @@ type TaskFormValues = {
   status_id: string;
 };
 
-export type TaskFormProps = {
-  mode: "create" | "edit";
+type TaskFormBaseProps = {
   statuses: TaskStatusOption[];
   projects: TaskProject[];
   categories: TaskCategory[];
   defaultValues: TaskFormValues;
 };
 
-export function TaskForm({
-  mode,
-  statuses,
-  projects,
-  categories,
-  defaultValues,
-}: TaskFormProps) {
+type TaskCreateFormProps = TaskFormBaseProps & {
+  mode: "create";
+  taskId?: never;
+};
+
+type TaskEditFormProps = TaskFormBaseProps & {
+  mode: "edit";
+  taskId: string;
+};
+
+export type TaskFormProps = TaskCreateFormProps | TaskEditFormProps;
+
+export function TaskForm(props: TaskFormProps) {
+  const { mode, statuses, projects, categories, defaultValues } = props;
+
   const router = useRouter();
 
   const [formValues, setFormValues] = useState<TaskFormValues>(defaultValues);
@@ -63,6 +70,12 @@ export function TaskForm({
     : mode === "create"
       ? "Save Task"
       : "Save Changes";
+
+  const screenName = mode === "create" ? "task-create" : "task-edit";
+  const rootSectionName =
+    mode === "create" ? "task-create-root" : "task-edit-root";
+  const formComponentName =
+    mode === "create" ? "task-create-form" : "task-edit-form";
 
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setFormValues((currentValues) => ({
@@ -113,6 +126,11 @@ export function TaskForm({
   }
 
   function handleCancel() {
+    if (mode === "edit") {
+      router.push(`/tasks/${props.taskId}`);
+      return;
+    }
+
     router.push("/tasks");
   }
 
@@ -176,6 +194,21 @@ export function TaskForm({
 
     startTransition(async () => {
       try {
+        if (mode === "edit") {
+          await updateTaskAction({
+            taskId: props.taskId,
+            title: normalizedValues.title,
+            due_date: normalizedValues.due_date || null,
+            project_id: normalizedValues.project_id,
+            category_id: normalizedValues.category_id,
+            description: normalizedValues.description || null,
+            status_id: normalizedValues.status_id,
+          });
+
+          router.push(`/tasks/${props.taskId}`);
+          return;
+        }
+
         await createTaskAction({
           title: normalizedValues.title,
           due_date: normalizedValues.due_date || null,
@@ -184,6 +217,7 @@ export function TaskForm({
           description: normalizedValues.description || null,
           status_id: normalizedValues.status_id,
         });
+
         router.push("/tasks");
       } catch (error) {
         setSubmitError(
@@ -196,11 +230,11 @@ export function TaskForm({
   }
 
   return (
-    <main data-screen="task-create">
-      <section data-section="task-create-root">
+    <main data-screen={screenName}>
+      <section data-section={rootSectionName}>
         <h1>{formTitle}</h1>
 
-        <form data-component="task-create-form" onSubmit={handleSubmit}>
+        <form data-component={formComponentName} onSubmit={handleSubmit}>
           <div data-field-group="title">
             <label htmlFor="task-title">Title</label>
             <input
