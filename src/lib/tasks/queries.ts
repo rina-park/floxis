@@ -15,16 +15,33 @@ function pickOne<T>(value: T | T[] | null | undefined): T | null {
   return value ?? null;
 }
 
-function throwFetchError(
+function assertNoError(
   error: { message?: string } | null,
+  context: string,
+): void {
+  if (error) {
+    throw new Error(
+      `Failed to fetch ${context}: ${error.message ?? "Unknown error"}`,
+    )
+  }
+}
+
+function assertDataExists(
   data: unknown,
   context: string,
-): asserts data {
-  if (error || !data) {
-    throw new Error(
-      `Failed to fetch ${context}: ${error?.message ?? "Unknown error"}`,
-    );
+): void {
+  if (data == null) {
+    throw new Error(`No data returned for ${context}`)
   }
+}
+
+function assertFetched<T>(
+  error: { message?: string } | null,
+  data: T | null | undefined,
+  context: string,
+): asserts data is T {
+  assertNoError(error, context)
+  assertDataExists(data, context)
 }
 
 async function fetchTaskStatuses(): Promise<TaskStatusOption[]> {
@@ -34,7 +51,7 @@ async function fetchTaskStatuses(): Promise<TaskStatusOption[]> {
     .select("id, key, name")
     .order("sort_order", { ascending: true });
 
-  throwFetchError(error, data, "task statuses");
+  assertFetched(error, data, "task statuses");
 
   return data.map((status) => ({
     id: status.id,
@@ -62,7 +79,7 @@ export async function getTasks() {
     )
     .order("created_at", { ascending: false });
 
-  throwFetchError(error, data, "tasks");
+  assertFetched(error, data, "tasks");
 
   return data.map((task) => {
     const project = pickOne(task.project);
@@ -109,9 +126,9 @@ export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
     )
     .order("sort_order", { ascending: true });
 
-  throwFetchError(error, data, "task create projects");
-
-  return data.map((project) => {
+  assertNoError(error, "task create projects");
+  
+  return (data ?? []).map((project) => {
     const category = pickOne(project.category);
 
     return {
@@ -134,12 +151,12 @@ export async function getTaskCreateCategories(): Promise<CategoryOption[]> {
     .select("id, name")
     .order("sort_order", { ascending: true });
 
-  throwFetchError(error, data, "task create categories");
+  assertNoError(error, "task create categories");
 
-  return data.map((category) => ({
+  return (data ?? []).map((category) => ({
     id: category.id,
     name: category.name,
-  }));
+  }))
 }
 
 export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
