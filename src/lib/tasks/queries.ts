@@ -248,7 +248,8 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
 export async function getTaskDetailStatuses(): Promise<TaskStatusOption[]> {
   try {
     return await fetchTaskStatuses();
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch task detail statuses", error);
     // Keep the detail page renderable even if status options fail to load.
     return [];
   }
