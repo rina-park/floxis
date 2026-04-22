@@ -7,12 +7,12 @@ import type {
   TaskStatusOption,
 } from "@/types/task";
 
-function pickOne<T>(value: T | T[] | null | undefined): T | null {
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-
-  return value ?? null;
+function normalizeJoinedOne<T>(
+  value: T | T[] | null | undefined,
+): T | null {
+  return Array.isArray(value)
+    ? value[0] ?? null
+    : value ?? null;
 }
 
 function assertNoError(
@@ -82,7 +82,7 @@ export async function getTasks() {
   assertFetched(error, data, "tasks");
 
   return data.map((task) => {
-    const project = pickOne(task.project);
+    const project = normalizeJoinedOne(task.project);
 
     return {
       id: task.id,
@@ -129,7 +129,7 @@ export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
   assertNoError(error, "task create projects");
   
   return (data ?? []).map((project) => {
-    const category = pickOne(project.category);
+    const category = normalizeJoinedOne(project.category);
 
     return {
       id: project.id,
@@ -199,15 +199,15 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
     return null;
   }
 
-  const status = pickOne(data.status);
-  const category = pickOne(data.category);
-  const rawProject = pickOne(data.project);
+  const status = normalizeJoinedOne(data.status);
+  const category = normalizeJoinedOne(data.category);
+  const rawProject = normalizeJoinedOne(data.project);
 
   if (!status) {
     return null;
   }
 
-  const projectCategory = rawProject ? pickOne(rawProject.category) : null;
+  const projectCategory = rawProject ? normalizeJoinedOne(rawProject.category) : null;
 
   return {
     id: data.id,
