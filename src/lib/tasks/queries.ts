@@ -197,16 +197,18 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
     .eq("id", taskId)
     .single();
 
-  if (error || !data) {
-    return null;
+  if (error) {
+    throw new Error(`Failed to fetch task: ${error.message}`);
   }
+
+  if (!data) return null;
 
   const status = normalizeJoinedOne(data.status);
   const category = normalizeJoinedOne(data.category);
   const rawProject = normalizeJoinedOne(data.project);
 
   if (!status) {
-    return null;
+    throw new Error(`Task ${taskId} is missing a valid status relation`);
   }
 
   const projectCategory = rawProject ? normalizeJoinedOne(rawProject.category) : null;
