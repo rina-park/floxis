@@ -125,7 +125,8 @@ export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
       `,
     )
     .order("sort_order", { ascending: true });
-
+  
+  // プロジェクト・カテゴリ未設定でもタスク作成は可能なので空配列で返す
   assertNoError(error, "task create projects");
   
   return (data ?? []).map((project) => {
@@ -151,6 +152,7 @@ export async function getTaskCreateCategories(): Promise<CategoryOption[]> {
     .select("id, name")
     .order("sort_order", { ascending: true });
 
+  // プロジェクト・カテゴリ未設定でもタスク作成は可能なので空配列で返す
   assertNoError(error, "task create categories");
 
   return (data ?? []).map((category) => ({
