@@ -9,7 +9,11 @@ export async function getCurrentUser() {
   } = await supabase.auth.getUser();
 
   if (error) {
-    return null;
+    throw new Error(`Failed to get current user: ${error.message}`);
+  }
+
+  if (!user) {
+    throw new Error("Unauthorized");
   }
 
   return user;

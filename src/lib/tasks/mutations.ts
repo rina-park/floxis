@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { createServerClient } from "@/lib/supabase/server";
 
 export type CreateTaskInput = {
@@ -62,6 +63,7 @@ export async function createTask(
   input: CreateTaskInput,
 ): Promise<CreateTaskResult> {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const normalizedInput = normalizeTaskInput(input);
 
   if (!normalizedInput.title) {
@@ -75,6 +77,7 @@ export async function createTask(
   const { data, error } = await supabase
     .from("tasks")
     .insert({
+      owner_id: user.id,
       title: normalizedInput.title,
       title_original: null,
       description: normalizedInput.description,
@@ -102,6 +105,7 @@ export async function updateTask(
   input: UpdateTaskInput,
 ): Promise<UpdateTaskResult> {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const normalizedTaskId = input.taskId.trim();
   const normalizedInput = normalizeTaskInput(input);
 
@@ -128,6 +132,7 @@ export async function updateTask(
       status_id: normalizedInput.status_id,
     })
     .eq("id", normalizedTaskId)
+    .eq("owner_id", user.id)
     .select("id")
     .single();
 
