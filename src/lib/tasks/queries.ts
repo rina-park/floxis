@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 import type {
   CategoryOption,
@@ -22,7 +23,7 @@ function assertNoError(
   if (error) {
     throw new Error(
       `Failed to fetch ${context}: ${error.message ?? "Unknown error"}`,
-    )
+    );
   }
 }
 
@@ -31,7 +32,7 @@ function assertDataExists(
   context: string,
 ): void {
   if (data == null) {
-    throw new Error(`No data returned for ${context}`)
+    throw new Error(`No data returned for ${context}`);
   }
 }
 
@@ -40,15 +41,17 @@ function assertFetched<T>(
   data: T | null | undefined,
   context: string,
 ): asserts data is T {
-  assertNoError(error, context)
-  assertDataExists(data, context)
+  assertNoError(error, context);
+  assertDataExists(data, context);
 }
 
 async function fetchTaskStatuses(): Promise<TaskStatusOption[]> {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const { data, error } = await supabase
     .from("statuses")
     .select("id, key, name")
+    .eq("owner_id", user.id)
     .order("sort_order", { ascending: true });
 
   assertFetched(error, data, "task statuses");
@@ -62,6 +65,7 @@ async function fetchTaskStatuses(): Promise<TaskStatusOption[]> {
 
 export async function getTasks() {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const { data, error } = await supabase
     .from("tasks")
     .select(
@@ -77,6 +81,7 @@ export async function getTasks() {
         )
       `,
     )
+    .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
   assertFetched(error, data, "tasks");
@@ -112,6 +117,7 @@ export async function getTaskFormStatuses(): Promise<TaskStatusOption[]> {
 
 export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const { data, error } = await supabase
     .from("projects")
     .select(
@@ -124,11 +130,12 @@ export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
         )
       `,
     )
+    .eq("owner_id", user.id)
     .order("sort_order", { ascending: true });
-  
+
   // プロジェクト・カテゴリ未設定でもタスク作成は可能なので空配列で返す
   assertNoError(error, "task create projects");
-  
+
   return (data ?? []).map((project) => {
     const category = normalizeJoinedOne(project.category);
 
@@ -147,9 +154,11 @@ export async function getTaskCreateProjects(): Promise<ProjectOption[]> {
 
 export async function getTaskCreateCategories(): Promise<CategoryOption[]> {
   const supabase = await createServerClient();
+  const user = await getCurrentUser();
   const { data, error } = await supabase
     .from("categories")
     .select("id, name")
+    .eq("owner_id", user.id)
     .order("sort_order", { ascending: true });
 
   // プロジェクト・カテゴリ未設定でもタスク作成は可能なので空配列で返す
@@ -158,12 +167,12 @@ export async function getTaskCreateCategories(): Promise<CategoryOption[]> {
   return (data ?? []).map((category) => ({
     id: category.id,
     name: category.name,
-  }))
+  }));
 }
 
 export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
   const supabase = await createServerClient();
-
+  const user = await getCurrentUser();
   const { data, error } = await supabase
     .from("tasks")
     .select(
@@ -195,7 +204,8 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
       `,
     )
     .eq("id", taskId)
-    .single();
+    .eq("owner_id", user.id)
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Failed to fetch task: ${error.message}`);
@@ -211,7 +221,9 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
     throw new Error(`Task ${taskId} is missing a valid status relation`);
   }
 
-  const projectCategory = rawProject ? normalizeJoinedOne(rawProject.category) : null;
+  const projectCategory = rawProject
+    ? normalizeJoinedOne(rawProject.category)
+    : null;
 
   return {
     id: data.id,
@@ -248,11 +260,5 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
 }
 
 export async function getTaskDetailStatuses(): Promise<TaskStatusOption[]> {
-  try {
-    return await fetchTaskStatuses();
-  } catch (error) {
-    console.error("Failed to fetch task detail statuses", error);
-    // Keep the detail page renderable even if status options fail to load.
-    return [];
-  }
+  return fetchTaskStatuses();
 }
