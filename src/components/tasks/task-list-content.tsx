@@ -17,65 +17,85 @@ function getProjectName(task: TaskListRow): string {
   return task.project.name;
 }
 
+function getCategoryName(task: TaskListRow): string {
+  return task.category?.name ?? "—";
+}
+
+function getStatusName(
+  task: TaskListRow,
+  statuses: TaskStatusOption[],
+): string {
+  const status = statuses.find((status) => status.id === task.status_id);
+
+  return status?.name ?? "Unknown";
+}
+
 export function TaskListContent({
   tasks,
   statuses,
 }: TaskListContentProps) {
   return (
-    <>
-      <h1>Tasks</h1>
+    <section className="task-list-page">
 
-      <Link href="/tasks/new" data-action="go-to-task-create">
-        Add Task
-      </Link>
+      <header className="page-header">
+        <h1 className="page-title">Tasks</h1>
+        <Link href="/tasks/new" className="button-primary" data-action="go-to-task-create">
+          Add Task
+        </Link>
+      </header>
 
-      <ul data-component="task-list">
-        {tasks.map((task) => (
-          <li key={task.id} data-entity="task-item">
-            <article>
-              <h2 data-field="title">{task.title}</h2>
+      <ul className="task-list" data-component="task-list">
+        {tasks.map((task) =>(
+          <li
+            key={task.id}
+            className="task-list-item"
+            data-entity="task-item"
+          >
+            <Link
+              href={`/tasks/${task.id}`}
+              className="task-card-link"
+              data-action="go-to-task-detail"
+            >
+              <article className="task-card">
+                <header className="task-card-header">
+                  <h2 className="task-card-title" data-field="title">
+                    {task.title}
+                  </h2>
 
-              <label>
-                Status:
-                {/* Status update is not wired yet in v0.1 */}
-                <select
-                  name="status"
-                  data-action="update-task-status"
-                  defaultValue={task.status_id}
-                  disabled
-                >
-                  {statuses.map((status) => (
-                    <option key={status.id} value={status.id}>
-                      {status.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  <span className="task-status-badge" data-field="status">
+                    {getStatusName(task, statuses)}
+                  </span>
+                </header>
 
-              <p data-field="due-date">
-                Due Date: {formatDateOnly(task.due_date)}
-              </p>
+                <dl className="task-meta-list">
+                  <div className="task-meta-row">
+                    <div className="task-meta-item">
+                      <dt>Category</dt>
+                      <dd data-field="category">{getCategoryName(task)}</dd>
+                    </div>
+                     <div className="task-meta-item">
+                      <dt>Project</dt>
+                      <dd data-field="project">{getProjectName(task)}</dd>
+                    </div>
+                  </div>
 
-              <p data-field="project">
-                Project: {getProjectName(task)}
-              </p>
+                  <div className="task-meta-row">
+                    <div className="task-meta-item">
+                      <dt>Created At</dt>
+                      <dd data-field="created-at">{formatDateTime(task.created_at)}</dd>
+                    </div>
 
-              <p data-field="created-at">
-                Created At: {formatDateTime(task.created_at)}
-              </p>
-
-              <div data-component="task-actions">
-                <Link
-                  href={`/tasks/${task.id}`}
-                  data-action="go-to-task-detail"
-                >
-                  View Detail
-                </Link>
-              </div>
-            </article>
+                    <div className="task-meta-item">
+                      <dt>Due Date</dt>
+                      <dd data-field="due-date">{formatDateOnly(task.due_date)}</dd>
+                    </div>
+                  </div>
+                </dl>
+              </article>
+            </Link>
           </li>
         ))}
       </ul>
-    </>
+    </section>
   );
 }

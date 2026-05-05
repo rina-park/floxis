@@ -1,0 +1,29 @@
+:root {
+  // v0.1ではUI調整の負荷を抑えるため、ライトテーマのみ定義する
+  --color-background: #fffffe;
+  --color-surface: #ffffff;
+  --color-surface-muted: #d1d1e9;
+
+  --color-text: #2b2c34;
+  --color-text-muted: rgba(43, 44, 52, 0.68);
+
+  --color-primary: #6246ea;
+  --color-primary-text: #fffffe;
+
+  --color-accent: #e45858;
+  --color-border: rgba(43, 44, 52, 0.14);
+
+  --layout-max-width: 60rem; // 960px相当
+  --layout-inline-padding: var(--space-6);
+
+  --space-1: 0.25rem; // 4px
+  --space-2: 0.5rem;  // 8px
+  --space-3: 0.75rem; // 12px
+  --space-4: 1rem;    // 16px
+  --space-6: 1.5rem;  // 24px
+  --space-8: 2rem;    // 32px
+  --space-16: 4rem;   // 64px
+
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+}

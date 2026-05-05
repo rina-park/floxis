@@ -77,6 +77,14 @@ export async function getTasks() {
         created_at,
         project:projects (
           id,
+          name,
+          category:categories (
+            id,
+            name
+          )
+        ),
+        category:categories (
+          id,
           name
         )
       `,
@@ -88,6 +96,11 @@ export async function getTasks() {
 
   return data.map((task) => {
     const project = normalizeJoinedOne(task.project);
+    const taskCategory = normalizeJoinedOne(task.category);
+    const projectCategory = project
+      ? normalizeJoinedOne(project.category)
+      : null;
+    const category = projectCategory ?? taskCategory;
 
     return {
       id: task.id,
@@ -99,6 +112,12 @@ export async function getTasks() {
         ? {
             id: project.id,
             name: project.name,
+          }
+        : null,
+      category: category
+        ? {
+            id: category.id,
+            name: category.name,
           }
         : null,
     };

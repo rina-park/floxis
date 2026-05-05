@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import { TaskListContent } from "@/components/tasks/task-list-content";
 import { getTaskListStatuses, getTasks } from "@/lib/tasks/queries";
 
