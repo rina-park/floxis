@@ -217,157 +217,222 @@ export function TaskForm(props: TaskFormProps) {
   }
 
   return (
-    <main data-screen={screenName}>
-      <section data-section={rootSectionName}>
-        <h1>{formTitle}</h1>
-
-        <form data-component={formComponentName} onSubmit={handleSubmit}>
-          <div data-field-group="title">
-            <label htmlFor="task-title">Title</label>
-            <input
-              id="task-title"
-              name="title"
-              type="text"
-              value={formValues.title}
-              onChange={handleTitleChange}
-              required
-              disabled={isPending}
-            />
-          </div>
-
-          <div data-field-group="due-date">
-            <label htmlFor="task-due-date">Due Date</label>
-            <input
-              id="task-due-date"
-              name="due_date"
-              type="date"
-              value={formValues.due_date}
-              onChange={handleDueDateChange}
-              disabled={isPending}
-            />
-          </div>
-
-          <div data-field-group="project">
-            <label htmlFor="task-project">Project</label>
-            <select
-              id="task-project"
-              name="project_id"
-              value={formValues.project_id ?? ""}
-              onChange={handleProjectChange}
-              disabled={isPending}
+    <section
+      className="task-form-page"
+      data-screen={screenName}
+      data-section={rootSectionName}
+    >
+      <header className="page-header">
+        <div className="page-title-group">
+          <button
+            type="button"
+            className="page-back-link"
+            aria-label={mode === "create" ? "Back to task list" : "Back to task detail"}
+            onClick={handleCancel}
+            disabled={isPending}
+          >
+            <svg
+              className="page-back-icon"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              aria-hidden="true"
+              focusable="false"
             >
-              <option value="">No Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div data-field-group="category">
-            <label htmlFor="task-category">Category</label>
-            <select
-              id="task-category"
-              name="category_id"
-              value={formValues.category_id ?? ""}
-              onChange={handleCategoryChange}
-              disabled={isProjectSelected || isPending}
-            >
-              <option value="">No Category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            {isProjectSelected ? (
-              <p>Category is disabled when Project is selected.</p>
-            ) : null}
-          </div>
-
-          <div data-field-group="description">
-            <label htmlFor="task-description">Notes</label>
-            <textarea
-              id="task-description"
-              name="description"
-              rows={6}
-              value={formValues.description}
-              onChange={handleDescriptionChange}
-              disabled={isPending}
-            />
-          </div>
-
-          <div data-field-group="status" hidden={mode === "create"}>
-            {mode === "edit" ? (
-              <>
-                <label htmlFor="task-status">Status</label>
-                <select
-                  id="task-status"
-                  name="status_id"
-                  value={formValues.status_id}
-                  onChange={handleStatusChange}
-                  disabled={isPending}
-                >
-                  {statuses.map((status) => (
-                    <option key={status.id} value={status.id}>
-                      {status.name}
-                    </option>
-                  ))}
-                </select>
-              </>
-            ) : null}
-          </div>
-
-          {mode === "create" ? (
-            <div data-field-group="status-hidden" hidden>
-              <input
-                type="hidden"
-                name="status_id"
-                value={formValues.status_id}
-                readOnly
+              <path
+                d="M15 18L9 12L15 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-            </div>
-          ) : null}
+            </svg>
+          </button>
 
-          <div data-component="form-actions">
-            <button
-              type="submit"
-              data-action={mode === "create" ? "create-task" : "update-task"}
-              disabled={isPending}
-            >
-              {submitLabel}
-            </button>
-            <button
-              type="button"
-              data-action={
-                mode === "create" ? "cancel-task-create" : "cancel-task-edit"
-              }
-              onClick={handleCancel}
-              disabled={isPending}
-            >
-              Cancel
-            </button>
+          <h1 className="page-title">{formTitle}</h1>
+        </div>
+      </header>
+
+      <form
+        className="task-form-card"
+        data-component={formComponentName}
+        onSubmit={handleSubmit}
+      >
+        <div className="task-form-field" data-field-group="title">
+          <label className="task-form-label" htmlFor="task-title">
+            Title
+          </label>
+          <input
+            id="task-title"
+            className="task-form-input"
+            name="title"
+            type="text"
+            value={formValues.title}
+            onChange={handleTitleChange}
+            required
+            disabled={isPending}
+          />
+        </div>
+
+        <div
+          className="task-form-field"
+          data-field-group="status"
+          hidden={mode === "create"}
+        >
+          <label className="task-form-label" htmlFor="task-status">
+            Status
+          </label>
+          <select
+            id="task-status"
+            className="task-form-select"
+            name="status_id"
+            value={formValues.status_id}
+            onChange={handleStatusChange}
+            disabled={isPending}
+          >
+            {statuses.map((status) => (
+              <option key={status.id} value={status.id}>
+                {status.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {mode === "create" ? (
+          <div data-field-group="status-hidden" hidden>
+            <input
+              type="hidden"
+              name="status_id"
+              value={formValues.status_id}
+              readOnly
+            />
           </div>
-        </form>
-      </section>
+        ) : null}
+
+        <div className="task-form-field" data-field-group="category">
+          <label className="task-form-label" htmlFor="task-category">
+            Category
+          </label>
+          <select
+            id="task-category"
+            className="task-form-select"
+            name="category_id"
+            value={formValues.category_id ?? ""}
+            onChange={handleCategoryChange}
+            disabled={isProjectSelected || isPending}
+          >
+            <option value="">No Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
+          {isProjectSelected ? (
+            <p className="task-form-help">
+              Category is disabled when Project is selected.
+            </p>
+          ) : null}
+        </div>
+
+        <div className="task-form-field" data-field-group="project">
+          <label className="task-form-label" htmlFor="task-project">
+            Project
+          </label>
+          <select
+            id="task-project"
+            className="task-form-select"
+            name="project_id"
+            value={formValues.project_id ?? ""}
+            onChange={handleProjectChange}
+            disabled={isPending}
+          >
+            <option value="">No Project</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="task-form-field" data-field-group="due-date">
+          <label className="task-form-label" htmlFor="task-due-date">
+            Due Date
+          </label>
+          <input
+            id="task-due-date"
+            className="task-form-input"
+            name="due_date"
+            type="date"
+            value={formValues.due_date}
+            onChange={handleDueDateChange}
+            disabled={isPending}
+          />
+        </div>
+
+        <div className="task-form-field" data-field-group="description">
+          <label className="task-form-label" htmlFor="task-description">
+            Notes
+          </label>
+          <textarea
+            id="task-description"
+            className="task-form-textarea"
+            name="description"
+            rows={6}
+            value={formValues.description}
+            onChange={handleDescriptionChange}
+            disabled={isPending}
+          />
+        </div>
+
+        <div className="task-form-actions" data-component="form-actions">
+          <button
+            type="button"
+            className="button-secondary"
+            data-action={
+              mode === "create" ? "cancel-task-create" : "cancel-task-edit"
+            }
+            onClick={handleCancel}
+            disabled={isPending}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="button-primary"
+            data-action={mode === "create" ? "create-task" : "update-task"}
+            disabled={isPending}
+          >
+            {submitLabel}
+          </button>
+        </div>
+      </form>
 
       <section
+        className="form-message-card"
         data-section="validation-errors"
         hidden={validationErrors.length === 0}
       >
-        <h2>Validation Errors</h2>
-        <ul>
+        <h2 className="form-message-title">Validation Errors</h2>
+        <ul className="form-message-list">
           {validationErrors.map((validationError) => (
             <li key={validationError}>{validationError}</li>
           ))}
         </ul>
       </section>
 
-      <section data-section="submit-errors" hidden={submitError === null}>
-        <h2>Save Error</h2>
+      <section
+        className="form-message-card"
+        data-section="submit-errors"
+        hidden={submitError === null}
+      >
+        <h2 className="form-message-title">Save Error</h2>
         {submitError ? <p>{submitError}</p> : null}
       </section>
-    </main>
+    </section>
   );
 }

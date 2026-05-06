@@ -88,3 +88,122 @@
   color: var(--color-text);
   font-size: 0.875rem;
 }
+
+.task-detail-page {
+  width: 100%;
+}
+
+.task-detail-card,
+.task-form-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  background: var(--color-surface);
+}
+
+.task-detail-title-section {
+  margin-bottom: var(--space-6);
+}
+
+.task-detail-title {
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.task-detail-list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.task-detail-item {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.task-detail-item dt {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.task-detail-item dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.task-danger-zone {
+  padding-top: var(--space-6);
+  text-align: right;
+}
+
+.task-form-page {
+  width: 100%;
+}
+
+.task-form-card {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.task-form-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.task-form-label {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.task-form-input,
+.task-form-select,
+.task-form-textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.task-form-textarea {
+  resize: vertical;
+}
+
+.task-form-help {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.task-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.form-message-card {
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.form-message-title {
+  margin-bottom: var(--space-2);
+  font-size: 1rem;
+}
+
+.form-message-list {
+  display: grid;
+  gap: var(--space-1);
+}

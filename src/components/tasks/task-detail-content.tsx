@@ -8,97 +8,125 @@ type TaskDetailContentProps = {
   statuses: TaskStatusOption[];
 };
 
-export function TaskDetailContent({
-  task,
-  statuses,
-}: TaskDetailContentProps) {
+function formatOptionalValue(value: string | null | undefined): string {
+  return value?.trim() ? value : "—";
+}
+
+
+export function TaskDetailContent({ task }: TaskDetailContentProps) {
   const effectiveCategory = task.project?.category ?? task.category;
-  const hasTitleOriginal = task.title_original !== null;
-  const hasDueDate = task.due_date !== null;
-  const hasProject = task.project !== null;
-  const hasCategory = effectiveCategory !== null;
-  const hasDescription = task.description !== null;
-  const hasCompletedAt = task.completed_at !== null;
 
   return (
-    <section data-section="task-detail-root">
-      <h1>Task Detail</h1>
-
-      <article data-entity="task-detail">
-        <section data-field-group="title">
-          <h2 data-field="title">{task.title}</h2>
-        </section>
-
-        <section
-          data-field-group="title-original"
-          hidden={!hasTitleOriginal}
-        >
-          <h3>Original Input</h3>
-          <p data-field="title-original">{task.title_original}</p>
-        </section>
-
-        <section data-field-group="status">
-          <label htmlFor="task-status">Status</label>
-          {/* Status update is not wired yet in v0.1 */}
-          <select
-            id="task-status"
-            name="status"
-            defaultValue={task.status.id}
-            data-action="update-task-status"
-            disabled
+    <section className="task-detail-page" data-section="task-detail-root">
+      <header className="page-header">
+        <div className="page-title-group">
+          <Link
+            href="/tasks"
+            className="page-back-link"
+            aria-label="Back to task list"
+            data-action="go-to-task-list"
           >
-            {statuses.map((status) => (
-              <option key={status.id} value={status.id}>
-                {status.name}
-              </option>
-            ))}
-          </select>
-        </section>
-
-        <section data-field-group="due-date" hidden={!hasDueDate}>
-          <h3>Due Date</h3>
-          <p data-field="due-date">{formatDateOnly(task.due_date)}</p>
-        </section>
-
-        <section data-field-group="project" hidden={!hasProject}>
-          <h3>Project</h3>
-          <p data-field="project">{task.project?.name}</p>
-        </section>
-
-        <section data-field-group="category" hidden={!hasCategory}>
-          <h3>Category</h3>
-          <p data-field="category">{effectiveCategory?.name}</p>
-        </section>
-
-        <section data-field-group="description" hidden={!hasDescription}>
-          <h3>Notes</h3>
-          <p data-field="description">{task.description}</p>
-        </section>
-
-        <section data-field-group="created-at">
-          <h3>Created At</h3>
-          <p data-field="created-at">{formatDateTime(task.created_at)}</p>
-        </section>
-
-        <section data-field-group="completed-at" hidden={!hasCompletedAt}>
-          <h3>Completed At</h3>
-          <p data-field="completed-at">{formatDateTime(task.completed_at)}</p>
-        </section>
-
-        <section data-component="task-actions">
-          <Link href={`/tasks/${task.id}/edit`} data-action="go-to-task-edit">
-            Edit Task
+            <svg
+              className="page-back-icon"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M15 18L9 12L15 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
 
-          <button type="button" data-action="delete-task">
-            Delete Task
-          </button>
+          <h1 className="page-title">Task Detail</h1>
+        </div>
 
-          <Link href="/tasks" data-action="go-to-task-list">
-            Back to Task List
-          </Link>
+        <Link
+          href={`/tasks/${task.id}/edit`}
+          className="button-secondary"
+          data-action="go-to-task-edit"
+        >
+          Edit Task
+        </Link>
+      </header>
+
+      <article className="task-detail-card" data-entity="task-detail">
+        <section className="task-detail-title-section" data-field-group="title">
+          <h2 className="task-detail-title" data-field="title">
+            {task.title}
+          </h2>
         </section>
+
+        <dl className="task-detail-list">
+          <div className="task-detail-item" data-field-group="status">
+            <dt>Status</dt>
+            <dd>
+              <span className="task-status-badge" data-field="status">
+                {task.status.name}
+              </span>
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="category">
+            <dt>Category</dt>
+            <dd data-field="category">
+              {formatOptionalValue(effectiveCategory?.name)}
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="project">
+            <dt>Project</dt>
+            <dd data-field="project">
+              {formatOptionalValue(task.project?.name)}
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="created-at">
+            <dt>Created At</dt>
+            <dd data-field="created-at">
+              {formatDateTime(task.created_at)}
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="due-date">
+            <dt>Due Date</dt>
+            <dd data-field="due-date">
+              {task.due_date ? formatDateOnly(task.due_date) : "—"}
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="completed-at">
+            <dt>Completed At</dt>
+            <dd data-field="completed-at">
+              {task.completed_at ? formatDateTime(task.completed_at) : "—"}
+            </dd>
+          </div>
+
+          <div className="task-detail-item" data-field-group="description">
+            <dt>Notes</dt>
+            <dd data-field="description">
+              {formatOptionalValue(task.description)}
+            </dd>
+          </div>
+
+        </dl>
       </article>
+      <div className="task-danger-zone">
+        <button
+          type="button"
+          className="button-danger"
+          data-action="delete-task"
+        >
+          Delete Task
+        </button>
+      </div>
     </section>
   );
 }
