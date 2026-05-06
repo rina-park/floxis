@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { TaskDetailContent } from "@/components/tasks/task-detail-content";
-import { getTaskById, getTaskDetailStatuses } from "@/lib/tasks/queries";
+import { getTaskById } from "@/lib/tasks/queries";
 
 type TaskDetailPageProps = {
   params: Promise<{
@@ -19,14 +19,11 @@ export default async function TaskDetailPage({
     notFound();
   }
 
-  const [task, statuses] = await Promise.all([
-    getTaskById(taskId),
-    getTaskDetailStatuses(),
-  ]);
+  const task = await getTaskById(id);
 
   if (!task) {
     notFound();
   }
 
-  return <TaskDetailContent task={task} statuses={statuses} />;
+  return <TaskDetailContent task={task}/>;
 }

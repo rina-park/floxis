@@ -1,17 +1,15 @@
 import Link from "next/link";
 
 import { formatDateOnly, formatDateTime } from "@/lib/format/date";
-import type { TaskDetail, TaskStatusOption } from "@/types/task";
+import type { TaskDetail } from "@/types/task";
 
 type TaskDetailContentProps = {
   task: TaskDetail;
-  statuses: TaskStatusOption[];
 };
 
 function formatOptionalValue(value: string | null | undefined): string {
   return value?.trim() ? value : "—";
 }
-
 
 export function TaskDetailContent({ task }: TaskDetailContentProps) {
   const effectiveCategory = task.project?.category ?? task.category;

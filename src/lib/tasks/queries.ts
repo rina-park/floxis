@@ -72,9 +72,13 @@ export async function getTasks() {
       `
         id,
         title,
-        status_id,
         due_date,
         created_at,
+        status:statuses (
+          id,
+          key,
+          name
+        ),
         project:projects (
           id,
           name,
@@ -95,6 +99,7 @@ export async function getTasks() {
   assertFetched(error, data, "tasks");
 
   return data.map((task) => {
+    const status = normalizeJoinedOne(task.status);
     const project = normalizeJoinedOne(task.project);
     const taskCategory = normalizeJoinedOne(task.category);
     const projectCategory = project
@@ -102,12 +107,20 @@ export async function getTasks() {
       : null;
     const category = projectCategory ?? taskCategory;
 
+    if (!status) {
+      throw new Error(`Task ${task.id} is missing a valid status relation`);
+    }
+
     return {
       id: task.id,
       title: task.title,
-      status_id: task.status_id,
       due_date: task.due_date,
       created_at: task.created_at,
+      status: {
+        id: status.id,
+        key: status.key,
+        name: status.name,
+      }, 
       project: project
         ? {
             id: project.id,
@@ -125,10 +138,6 @@ export async function getTasks() {
 }
 
 export type TaskListRow = Awaited<ReturnType<typeof getTasks>>[number];
-
-export async function getTaskListStatuses(): Promise<TaskStatusOption[]> {
-  return fetchTaskStatuses();
-}
 
 export async function getTaskFormStatuses(): Promise<TaskStatusOption[]> {
   return fetchTaskStatuses();
@@ -276,8 +285,4 @@ export async function getTaskById(taskId: string): Promise<TaskDetail | null> {
         }
       : null,
   };
-}
-
-export async function getTaskDetailStatuses(): Promise<TaskStatusOption[]> {
-  return fetchTaskStatuses();
 }

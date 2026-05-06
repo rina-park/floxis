@@ -1,12 +1,9 @@
 import Link from "next/link";
-
 import { formatDateOnly, formatDateTime } from "@/lib/format/date";
 import type { TaskListRow } from "@/lib/tasks/queries";
-import type { TaskStatusOption } from "@/types/task";
 
 type TaskListContentProps = {
   tasks: TaskListRow[];
-  statuses: TaskStatusOption[];
 };
 
 function getProjectName(task: TaskListRow): string {
@@ -21,18 +18,8 @@ function getCategoryName(task: TaskListRow): string {
   return task.category?.name ?? "—";
 }
 
-function getStatusName(
-  task: TaskListRow,
-  statuses: TaskStatusOption[],
-): string {
-  const status = statuses.find((status) => status.id === task.status_id);
-
-  return status?.name ?? "Unknown";
-}
-
 export function TaskListContent({
   tasks,
-  statuses,
 }: TaskListContentProps) {
   return (
     <section className="task-list-page">
@@ -63,7 +50,7 @@ export function TaskListContent({
                   </h2>
 
                   <span className="task-status-badge" data-field="status">
-                    {getStatusName(task, statuses)}
+                    {task.status.name}
                   </span>
                 </header>
 
