@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Supabase Auth の SSR セッションを維持するため、Proxy 経由で Cookie を同期する。
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
