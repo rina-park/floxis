@@ -31,7 +31,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/auth-debug");
+    router.push("/tasks");
   }
 
   return (
